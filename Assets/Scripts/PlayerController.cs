@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Camera playerCam;
     [SerializeField] ControlType controlType;
     [SerializeField] Player player;
+    
     Car car;
     PlayerInputs playerInputs;
 
@@ -47,7 +48,7 @@ public class PlayerController : MonoBehaviour
     }
 
     public void LateUpdate() {
-        PhysicsUtils.ClampToMaxObjectSpeed(GetComponent<Rigidbody>());
+        if (!isDriving) PhysicsUtils.ClampToMaxObjectSpeed(GetComponent<Rigidbody>());
     }
 
     public void EnterCar(Car newCar) {
@@ -110,10 +111,12 @@ public class PlayerController : MonoBehaviour
                     Mathf.Clamp(rb.linearVelocity.z, -walkSpeed, walkSpeed));
     }
     void TryInteraction() {
+        print("TryInteraction");
         if (!CanInteract()) return;
 
         RaycastHit hit;
         if (Physics.Raycast(interactCheckOrigin.position, interactCheckOrigin.forward, out hit, interactRange, LayerMask.GetMask("Interactable"))) {
+            print(hit.collider.transform.gameObject);
             Interactable interactable = hit.collider.transform.GetComponent<Interactable>();
             if (CanInteractWithInteractable(interactable)) {
                 if (interactable.CanInteract(player)) {
@@ -144,7 +147,7 @@ public class PlayerController : MonoBehaviour
     public class PlayerInputs {
         public ControlType ControlType;
         public Vector2 MoveValue, LookValue;
-        public bool InteractValue, Interact2Value, JumpValue;
+        public bool InteractValue, JumpValue;
         public PlayerInputs(ControlType newControlType) {
             ControlType = newControlType;
         }
@@ -153,7 +156,6 @@ public class PlayerController : MonoBehaviour
             MoveValue = InputSystem.actions.FindAction("Move").ReadValue<Vector2>();
             LookValue = InputSystem.actions.FindAction("Look").ReadValue<Vector2>();
             InteractValue = Mathf.Approximately(InputSystem.actions.FindAction("Interact").ReadValue<float>(), 1f);
-            Interact2Value = Mathf.Approximately(InputSystem.actions.FindAction("Interact2").ReadValue<float>(), 1f);
             JumpValue = Mathf.Approximately(InputSystem.actions.FindAction("Jump").ReadValue<float>(), 1f);
         }
     }

@@ -1,14 +1,30 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class Player : MonoBehaviour
+public class Player : NetworkBehaviour
 {
     [SerializeField] PlayerController playerController;
     [SerializeField] bool isDriving = false;
     [SerializeField] Car car;
 
-    public void EnterCar(Car newCar) {
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        if (IsClient && IsOwner)
+        {
+            playerController.enabled = true;
+        }
+        else
+        {
+            playerController.enabled = false;
+        }
+    }
+
+    public void EnterCar(Car newCar)
+    {
         SetCar(newCar);
-        foreach (Transform transform in gameObject.GetComponentsInChildren<Transform>(true)) {
+        foreach (Transform transform in gameObject.GetComponentsInChildren<Transform>(true))
+        {
             transform.gameObject.layer = LayerMask.NameToLayer("NotCar");
         }
         GetComponent<Rigidbody>().isKinematic = true;

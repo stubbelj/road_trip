@@ -1,11 +1,12 @@
 using UnityEngine;
-
-public class Car : MonoBehaviour
+using Unity.Netcode;
+public class Car : NetworkBehaviour
 {
     [SerializeField] CarController carController;
-    [SerializeField] Seat[] seats;
+    public Seat[] seats;
     
-    public void Drive(Vector2 inputs) {
+    public void Drive(Vector2 inputs)
+    {
         carController.Drive(inputs);
     }
 
@@ -33,9 +34,11 @@ public class Car : MonoBehaviour
     }
 
     [System.Serializable]
-    class Seat {
+    public class Seat
+    {
         public Transform SitTransform;
         public Transform ExitTransform;
         public Player player;
     }
+    
 }
